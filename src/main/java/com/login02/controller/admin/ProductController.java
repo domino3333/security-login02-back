@@ -8,9 +8,12 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -57,5 +60,26 @@ public class ProductController {
 
 	    return ResponseEntity.ok("상품 추가 완료");
 
+	}
+	
+	@GetMapping("/image/{id}")
+	public ResponseEntity<byte[]> getImage(@PathVariable Long id) throws IOException {
+	    Product product = productRepository.findById(id).orElseThrow();
+	    String fileName = product.getImagePath();
+	    Path path = Paths.get(uploadPath, fileName);
+
+	    if (!Files.exists(path)) return ResponseEntity.notFound().build();
+
+	    String ext = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+	    MediaType mediaType;
+	    switch (ext) {
+	        case "jpg": case "jpeg": mediaType = MediaType.IMAGE_JPEG; break;
+	        case "png": mediaType = MediaType.IMAGE_PNG; break;
+	        case "gif": mediaType = MediaType.IMAGE_GIF; break;
+	        default: mediaType = MediaType.APPLICATION_OCTET_STREAM;
+	    }
+
+	    byte[] imageBytes = Files.readAllBytes(path);
+	    return ResponseEntity.ok().contentType(mediaType).body(imageBytes);
 	}
 }
