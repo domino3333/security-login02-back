@@ -72,6 +72,7 @@ public class AuthController {
 	                .body("Refresh Token이 유효하지 않습니다.");
 	    }
 
+	    //username == 이메일임
 	    String username = jwtProvider.getUsername(refreshToken);
 
 	    Member member = memberRepository.findByEmail(username)
