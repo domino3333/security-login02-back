@@ -13,6 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -29,16 +30,26 @@ public class JwtCheckFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
+		Cookie[] cookies = request.getCookies();
 
-		String authHeader = request.getHeader("Authorization");
-
-		// Bearer 토큰이 없으면 필터 패스
-		if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-			filterChain.doFilter(request, response);
-			return;
+		if (cookies == null) {
+		    filterChain.doFilter(request, response);
+		    return;
 		}
 
-		String token = authHeader.substring(7); // "Bearer " 제거
+		String token = null;
+
+		for (Cookie cookie : cookies) {
+		    if ("accessToken".equals(cookie.getName())) {
+		        token = cookie.getValue();
+		        break;
+		    }
+		}
+
+		if (token == null) {
+		    filterChain.doFilter(request, response);
+		    return;
+		}
 
 		try {
 			if (jwtProvider.validateToken(token)) {
