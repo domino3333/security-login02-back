@@ -69,8 +69,9 @@ public class JwtCheckFilter extends OncePerRequestFilter {
 
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) {
-		// 로그인이나 회원가입 같은 엔드포인트는 필터링 제외
-		String path = request.getRequestURI();
-		return path.startsWith("/api/login") || path.startsWith("/api/member/");
+	    String path = request.getRequestURI();
+	    return path.startsWith("/api/login")
+	        || path.startsWith("/api/refresh")
+	        || path.startsWith("/api/member/");
 	}
 }

@@ -11,7 +11,9 @@ import com.login02.domain.Member;
 
 public interface MemberRepository extends JpaRepository<Member, Long>{
 
-    @EntityGraph(attributePaths = { "memberRoleSet" })
+    Optional<Member> findByEmail(String email);
+    
+    @EntityGraph(attributePaths = { "memberRoleS" })
 	@Query("select m from Member m where m.email = :email")
 	Optional<Member> getWithRoles(@Param("email") String email);
 
