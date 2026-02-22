@@ -12,6 +12,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -169,5 +170,28 @@ public class AuthController {
 
 		return ResponseEntity.ok("로그아웃 완료");
 	}
+	
+	@GetMapping("/give/me/admin")
+    public ResponseEntity<?> getMyInfo(Authentication authentication) {
+        if (authentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
+        }
+
+        String email = authentication.getName();
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("사용자 없음"));
+
+        // 필요한 정보만 내려줌
+        Map<String, Object> info = Map.of(
+                "email", member.getEmail(),
+                "roles", member.getMemberRoleSet().stream()
+                                .map(Enum::name)
+                                .toList()
+        );
+
+        return ResponseEntity.ok(info);
+    }
+	
+	
 
 }
