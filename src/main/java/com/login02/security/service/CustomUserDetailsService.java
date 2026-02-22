@@ -1,6 +1,11 @@
 package com.login02.security.service;
 
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,14 +27,19 @@ public class CustomUserDetailsService implements UserDetailsService {
     
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		 Member member = memberRepository.findByEmail(username)
+		 Member member = memberRepository.getWithRoles(username)
 	                .orElseThrow(() ->
 	                        new UsernameNotFoundException("사용자 없음"));
-
+		 
+		 Set<GrantedAuthority> authorities =
+			        member.getMemberRoleSet().stream()
+			                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
+			                .collect(Collectors.toSet());
+		 
 	        return User.builder()
 	                .username(member.getEmail())
 	                .password(member.getPassword())
-	                .roles(member.getMemberRoleList())
+	                .authorities(authorities)
 	                .build();
 	}
 
