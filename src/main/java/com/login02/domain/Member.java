@@ -52,7 +52,7 @@ public class Member {
     @Column(name = "CREATED_AT", updatable = false)
     private LocalDateTime createdAt;
     
-    @Column(length = 500)
+    @Column(name = "refresh_token",length = 500)
     private String refreshToken;
 
     @ElementCollection(fetch = FetchType.LAZY)

@@ -1,6 +1,7 @@
 package com.login02.controller;
 
 
+
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -22,10 +23,12 @@ import com.login02.security.JwtProvider;
 import com.login02.security.domain.LoginRequest;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
+@Log
 public class AuthController {
 
 	private final AuthenticationManager authenticationManager;
@@ -41,7 +44,8 @@ public class AuthController {
 			
 			String token = jwtProvider.createToken(authentication);
 			String refreshToken = jwtProvider.createRefreshToken(authentication);
-			
+			log.info("authcon--------------------------"+authentication.getName());
+			//getName() == 이메일임
 			Member member = memberRepository.findByEmail(authentication.getName()).get();
 	        member.setRefreshToken(refreshToken);
 	        memberRepository.save(member);
@@ -49,7 +53,8 @@ public class AuthController {
 			return ResponseEntity.ok(Map.of(
 		            "success", true,
 		            "message", "로그인 성공",
-		            "token", token
+		            "accessToken", token,
+		            "refreshToken",refreshToken
 		        ));
 		} catch (AuthenticationException e) {
 

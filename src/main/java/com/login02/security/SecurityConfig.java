@@ -35,7 +35,11 @@ public class SecurityConfig {
         .sessionManagement(session ->
             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .formLogin(form -> form.disable())
-        .httpBasic(basic -> basic.disable());
+        .httpBasic(basic -> basic.disable())
+		.authorizeHttpRequests(auth -> auth
+		        .requestMatchers("/api/login", "/api/refresh", "/api/member/**").permitAll()
+		        .anyRequest().authenticated()
+		    );
 		
 		http.addFilterBefore(new JwtCheckFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
 		return http.build();

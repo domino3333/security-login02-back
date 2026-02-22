@@ -13,7 +13,7 @@ public interface MemberRepository extends JpaRepository<Member, Long>{
 
     Optional<Member> findByEmail(String email);
     
-    @EntityGraph(attributePaths = { "memberRoleS" })
+    @EntityGraph(attributePaths = { "memberRoleSet" })
 	@Query("select m from Member m where m.email = :email")
 	Optional<Member> getWithRoles(@Param("email") String email);
 
