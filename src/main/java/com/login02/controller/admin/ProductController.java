@@ -67,24 +67,24 @@ public class ProductController {
 
 	}
 	
-//	@GetMapping("/image/{id}")
-//	public ResponseEntity<byte[]> getImage(@PathVariable Long id) throws IOException {
-//	    Product product = productRepository.findById(id).orElseThrow();
-//	    String fileName = product.getImagePath();
-//	    Path path = Paths.get(uploadPath, fileName);
-//
-//	    if (!Files.exists(path)) return ResponseEntity.notFound().build();
-//
-//	    String ext = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
-//	    MediaType mediaType;
-//	    switch (ext) {
-//	        case "jpg": case "jpeg": mediaType = MediaType.IMAGE_JPEG; break;
-//	        case "png": mediaType = MediaType.IMAGE_PNG; break;
-//	        case "gif": mediaType = MediaType.IMAGE_GIF; break;
-//	        default: mediaType = MediaType.APPLICATION_OCTET_STREAM;
-//	    }
-//
-//	    byte[] imageBytes = Files.readAllBytes(path);
-//	    return ResponseEntity.ok().contentType(mediaType).body(imageBytes);
-//	}
+	@GetMapping("/image/{id}")
+	public ResponseEntity<byte[]> getImage(@PathVariable Long id) throws IOException {
+	    Product product = productRepository.findById(id).orElseThrow();
+	    String fileName = product.getImageUrl();
+	    Path path = Paths.get(uploadPath, fileName);
+
+	    if (!Files.exists(path)) return ResponseEntity.notFound().build();
+
+	    String ext = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+	    MediaType mediaType;
+	    switch (ext) {
+	        case "jpg": case "jpeg": mediaType = MediaType.IMAGE_JPEG; break;
+	        case "png": mediaType = MediaType.IMAGE_PNG; break;
+	        case "gif": mediaType = MediaType.IMAGE_GIF; break;
+	        default: mediaType = MediaType.APPLICATION_OCTET_STREAM;
+	    }
+
+	    byte[] imageBytes = Files.readAllBytes(path);
+	    return ResponseEntity.ok().contentType(mediaType).body(imageBytes);
+	}
 }
