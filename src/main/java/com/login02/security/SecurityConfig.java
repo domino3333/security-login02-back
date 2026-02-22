@@ -37,7 +37,7 @@ public class SecurityConfig {
         .formLogin(form -> form.disable())
         .httpBasic(basic -> basic.disable())
 		.authorizeHttpRequests(auth -> auth
-		        .requestMatchers("/api/login", "/api/refresh", "/api/member/**").permitAll()
+		        .requestMatchers("/api/login","/api/logout", "/api/refresh", "/api/member/**").permitAll()
 		        .anyRequest().authenticated()
 		    );
 		
