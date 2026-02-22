@@ -20,17 +20,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.login02.domain.Product;
+import com.login02.repository.ProductRepository;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 
 @Controller
 @Log
 @RequestMapping("/admin/product")
 @PreAuthorize("hasRole('ADMIN')")
+@RequiredArgsConstructor
 public class ProductController {
 
 	@Value("${upload.path}")
 	private String uploadPath;
+	
+	private final ProductRepository productRepository;
 	
 	@PostMapping("/add")
 	public ResponseEntity<?> add(String productName, int productQuantity,
@@ -53,33 +58,33 @@ public class ProductController {
 
 	    // 2. 상품 DB 저장
 	    Product product = new Product();
-	    product.setProductName(productName);
-	    product.setProductQuantity(productQuantity);
-	    product.setImagePath(savedFileName); // DB에는 파일명만 저장
+	    product.setName(productName);
+	    product.setQuantity(productQuantity);
+	    product.setImageUrl(savedFileName); // DB에는 파일명만 저장
 	    productRepository.save(product);
 
 	    return ResponseEntity.ok("상품 추가 완료");
 
 	}
 	
-	@GetMapping("/image/{id}")
-	public ResponseEntity<byte[]> getImage(@PathVariable Long id) throws IOException {
-	    Product product = productRepository.findById(id).orElseThrow();
-	    String fileName = product.getImagePath();
-	    Path path = Paths.get(uploadPath, fileName);
-
-	    if (!Files.exists(path)) return ResponseEntity.notFound().build();
-
-	    String ext = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
-	    MediaType mediaType;
-	    switch (ext) {
-	        case "jpg": case "jpeg": mediaType = MediaType.IMAGE_JPEG; break;
-	        case "png": mediaType = MediaType.IMAGE_PNG; break;
-	        case "gif": mediaType = MediaType.IMAGE_GIF; break;
-	        default: mediaType = MediaType.APPLICATION_OCTET_STREAM;
-	    }
-
-	    byte[] imageBytes = Files.readAllBytes(path);
-	    return ResponseEntity.ok().contentType(mediaType).body(imageBytes);
-	}
+//	@GetMapping("/image/{id}")
+//	public ResponseEntity<byte[]> getImage(@PathVariable Long id) throws IOException {
+//	    Product product = productRepository.findById(id).orElseThrow();
+//	    String fileName = product.getImagePath();
+//	    Path path = Paths.get(uploadPath, fileName);
+//
+//	    if (!Files.exists(path)) return ResponseEntity.notFound().build();
+//
+//	    String ext = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+//	    MediaType mediaType;
+//	    switch (ext) {
+//	        case "jpg": case "jpeg": mediaType = MediaType.IMAGE_JPEG; break;
+//	        case "png": mediaType = MediaType.IMAGE_PNG; break;
+//	        case "gif": mediaType = MediaType.IMAGE_GIF; break;
+//	        default: mediaType = MediaType.APPLICATION_OCTET_STREAM;
+//	    }
+//
+//	    byte[] imageBytes = Files.readAllBytes(path);
+//	    return ResponseEntity.ok().contentType(mediaType).body(imageBytes);
+//	}
 }
