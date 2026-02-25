@@ -17,17 +17,12 @@ import lombok.RequiredArgsConstructor;
 public class TestController {
 
 	private final ProductService ps;
-	
+
 	@GetMapping("/read/product")
-	public ResponseEntity<?> sadf (
-			@RequestParam int page,
-			@RequestParam int size
-			){
-		
-		Page<Product> result=  ps.findAll(PageRequest.of(page, size));
-		
-		
-		return ResponseEntity
-				.ok(result.getContent());
+	public ResponseEntity<?> sadf(@RequestParam int page, @RequestParam int size) {
+
+		Page<Product> result = ps.findAll(PageRequest.of(page, size));
+
+		return ResponseEntity.ok(result.getContent());
 	}
 }
